@@ -1,0 +1,15 @@
+.vs/
+bin/
+obj/
+dist/
+packages/
+node_modules/
+CapitalStreet.Server/Services/Socket.io.server/node_modules/
+run/mysql
+!packages/repositories.config
+
+*.user
+*.orig
+*.log
+*.dll
+UpgradeLog.htm
