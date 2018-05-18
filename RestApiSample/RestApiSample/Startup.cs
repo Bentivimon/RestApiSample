@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Gateway.Middlewares;
+using Gateway.Services;
+using Gateway.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
+using Serilog;
+using Serilog.Events;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Gateway
@@ -19,6 +21,10 @@ namespace Gateway
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            AddLogger();
+
+            TestLogger();
         }
 
         public IConfiguration Configuration { get; }
@@ -50,24 +56,50 @@ namespace Gateway
                 sg.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath,
                     "Gateway.xml"));
             });
+
+            services.AddSingleton<IGroupClient, GroupClient>();
+            services.AddSingleton<IStudentsClient, StudentsClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddSerilog();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseMvc();
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseSwagger();
             app.UseSwaggerUI(f =>
             {
                 //f.RoutePrefix = "doc";
                 f.SwaggerEndpoint("/swagger/v." + PlatformServices.Default.Application.ApplicationVersion + "/swagger.json", "Desc");
             });
+        }
+
+        private void AddLogger()
+        {
+            var serilogConfig = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("serilogconfig.json").Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(serilogConfig)
+                .CreateLogger();
+        }
+
+        private void TestLogger()
+        {
+            Log.Logger.Error("Test error");
+            Log.Logger.Warning("Test warging");
+            Log.Logger.Write(LogEventLevel.Verbose, "Test verbose");
+            var startupLogger = Log.Logger.ForContext<Startup>();
+
+            startupLogger.Write(LogEventLevel.Warning, "Test warning from startup");
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace GroupsAPI.Data.Models
+﻿namespace GroupsAPI.Data.Models
 {
     public class GroupEntity
     {
@@ -12,6 +10,6 @@ namespace GroupsAPI.Data.Models
 
         public long FacultyId { get; set; }
 
-        public List<long> StudentIds { get; set; }
+        public string StudentIds { get; set; }
     }
 }

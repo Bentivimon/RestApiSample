@@ -2,7 +2,7 @@
 
 namespace DataModels.RequestModels
 {
-    public class GroupRequestModel
+    public class GroupMessage
     {
         public long Id { get; set; }
 
@@ -12,6 +12,6 @@ namespace DataModels.RequestModels
 
         public long FacultyId { get; set; }
 
-        public List<long> StudentIds { get; set; }
+        public IEnumerable<long> StudentIds { get; set; } = new List<long>();
     }
 }

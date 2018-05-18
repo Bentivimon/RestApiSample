@@ -17,14 +17,14 @@ namespace GroupsAPI.Data.Seeder
             _dbContext = dbContext;
         }
 
-        public void EnsureDatabaseCreated(DatabaseContext context)
+        public void EnsureDatabaseCreated()
         {
-            context.Database.Migrate();
+            _dbContext.Database.Migrate();
         }
 
         public void Seed()
         {
-            EnsureDatabaseCreated(_dbContext);
+            EnsureDatabaseCreated();
 
             if (_dbContext.Groups.ToList().Count != 0)
                 return;

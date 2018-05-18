@@ -6,9 +6,9 @@ namespace GroupsAPI.Services.Abstractions
 {
     public interface IGroupService
     {
-        Task<IEnumerable<GroupRequestModel>> GetAllGroupsAsync();
-        Task<GroupRequestModel> GetGroupAsync(long id);
-        Task<GroupRequestModel> AddGroupAsync(GroupRequestModel request);
-        Task<GroupRequestModel> UpdateGroupAsync(GroupRequestModel request);
+        Task<IEnumerable<GroupMessage>> GetAllGroupsAsync();
+        Task<GroupMessage> GetGroupAsync(long id);
+        Task<GroupMessage> AddGroupAsync(GroupMessage request);
+        Task<GroupMessage> UpdateGroupAsync(GroupMessage request);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace DataModels.RequestModels
 {
-    public class StudentRequestModel
+    public class StudentMessage
     {
         public long Id { get; set; }
 

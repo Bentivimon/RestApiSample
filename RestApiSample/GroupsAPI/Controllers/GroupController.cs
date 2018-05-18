@@ -16,7 +16,7 @@ namespace GroupsAPI.Controllers
             _groupService = groupService;
         }
 
-        [HttpGet("api/groups")]
+        [HttpGet("gateway/groups")]
         public async Task<IActionResult> GetAllGroupsAsync()
         {
             try
@@ -30,7 +30,7 @@ namespace GroupsAPI.Controllers
             }
         }
 
-        [HttpGet("api/group")]
+        [HttpGet("gateway/group")]
         public async Task<IActionResult> GetGroupByIdAsync([FromQuery] long groupId)
         {
             try
@@ -48,8 +48,8 @@ namespace GroupsAPI.Controllers
             }
         }
 
-        [HttpPost("api/group")]
-        public async Task<IActionResult> AddGroupAsync([FromQuery] GroupRequestModel request)
+        [HttpPost("gateway/group")]
+        public async Task<IActionResult> AddGroupAsync([FromQuery] GroupMessage request)
         {
             try
             {
@@ -62,8 +62,8 @@ namespace GroupsAPI.Controllers
             }
         }
 
-        [HttpPut("api/group")]
-        public async Task<IActionResult> UpdateGroupAsync([FromBody] GroupRequestModel requestModel)
+        [HttpPut("gateway/group")]
+        public async Task<IActionResult> UpdateGroupAsync([FromBody] GroupMessage requestModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest();

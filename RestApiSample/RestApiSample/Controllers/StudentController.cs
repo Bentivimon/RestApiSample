@@ -1,54 +1,44 @@
-﻿using System;
-using System.Threading.Tasks;
-using DataModels.RequestModels;
+﻿using DataModels.RequestModels;
+using Gateway.Services;
 using Microsoft.AspNetCore.Mvc;
-using StudentsAPI.Services.Abstractions;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
-namespace StudentsAPI.Controllers
+namespace Gateway.Controllers
 {
-    [Produces("application/json")]
-    public class StudentsController: Controller
+    [Produces("application/json")]    
+    public class StudentController : Controller
     {
-        private readonly IStudentService _studentService;
+        private readonly IStudentsClient _studentClient;
+        private readonly ILogger _logger;
 
-        public StudentsController(IStudentService studentService)
+        public StudentController(IStudentsClient studentClient, ILogger<StudentController> logger)
         {
-            _studentService = studentService;
+            _studentClient = studentClient;
+            _logger = logger;
         }
 
-        [HttpGet("gateway/students")]
+        [HttpGet("api/students")]
         public async Task<IActionResult> GetAllStudentsAsync()
         {
             try
             {
-                return Json(await _studentService.GetAllStudentsAsync());
+                return Json(await _studentClient.GetStudentsAsync());
             }
             catch (Exception ex)
             {
-                //Can add logger
+                _logger.LogError(ex, ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
-        [HttpGet("gateway/students/{groupId}")]
-        public async Task<IActionResult> GetStudentsOfGroupAsync(long groupId)
-        {
-            try
-            {
-                return Json(await _studentService.GetStudentsOfGroup(groupId));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error");
-            }
-        }
-
-        [HttpGet("gateway/student")]
+        [HttpGet("api/student")]
         public async Task<IActionResult> GetStudentByIdAsync([FromQuery] long studentId)
         {
             try
             {
-                return Json(await _studentService.GetStudentAsync(studentId));
+                return Json(await _studentClient.GetStudentByIdAsync(studentId));
             }
             catch (ArgumentException ex)
             {
@@ -56,26 +46,26 @@ namespace StudentsAPI.Controllers
             }
             catch (Exception ex)
             {
-                //Can add logger
+                _logger.LogError(ex, ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
-        [HttpPost("gateway/student")]
+        [HttpPost("api/student")]
         public async Task<IActionResult> AddStudentAsync([FromBody] StudentMessage request)
         {
             try
             {
-                return Json(await _studentService.AddStudentAsync(request));
+                return Json(await _studentClient.AddStudentAsync(request));
             }
             catch (Exception ex)
             {
-                //Can add logger
+                _logger.LogError(ex, ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
-        [HttpPut("gateway/student")]
+        [HttpPut("api/student")]
         public async Task<IActionResult> UpdateStudentAsync([FromBody] StudentMessage requestModel)
         {
             if (!ModelState.IsValid)
@@ -83,7 +73,7 @@ namespace StudentsAPI.Controllers
 
             try
             {
-                return Json(await _studentService.UpdateStudentAsync(requestModel));
+                return Json(await _studentClient.UpdateStudentAsync(requestModel));
             }
             catch (ArgumentException ex)
             {
@@ -91,7 +81,7 @@ namespace StudentsAPI.Controllers
             }
             catch (Exception ex)
             {
-                //Can add logger
+                _logger.LogError(ex, ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

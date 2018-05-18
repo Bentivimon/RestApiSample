@@ -19,9 +19,9 @@ namespace StudentsAPI.Services.Implementations
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<StudentRequestModel>> GetAllStudentsAsync()
+        public async Task<IEnumerable<StudentMessage>> GetAllStudentsAsync()
         {
-            return (await _dbContext.Students.ToListAsync()).Select(x => new StudentRequestModel
+            return (await _dbContext.Students.ToListAsync()).Select(x => new StudentMessage
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
@@ -31,14 +31,14 @@ namespace StudentsAPI.Services.Implementations
             });
         }
 
-        public async Task<StudentRequestModel> GetStudentAsync(long id)
+        public async Task<StudentMessage> GetStudentAsync(long id)
         {
             var studentEntity = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == id);
 
             if (studentEntity == null)
                 throw new ArgumentException($"Student with id {id} not found");
 
-            return new StudentRequestModel
+            return new StudentMessage
             {
                 Id = studentEntity.Id,
                 FirstName = studentEntity.FirstName,
@@ -48,7 +48,7 @@ namespace StudentsAPI.Services.Implementations
             };
         }
 
-        public async Task<StudentRequestModel> AddStudentAsync(StudentRequestModel request)
+        public async Task<StudentMessage> AddStudentAsync(StudentMessage request)
         {
             var studentEntity = new StudentEntity
             {
@@ -66,7 +66,7 @@ namespace StudentsAPI.Services.Implementations
             return request;
         }
 
-        public async Task<StudentRequestModel> UpdateStudentAsync(StudentRequestModel request)
+        public async Task<StudentMessage> UpdateStudentAsync(StudentMessage request)
         {
             var studentEntity = await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == request.Id);
 
@@ -81,6 +81,24 @@ namespace StudentsAPI.Services.Implementations
             await _dbContext.SaveChangesAsync();
 
             return request;
+        }
+
+        public async Task<IEnumerable<StudentMessage>> GetStudentsOfGroup(long groupId)
+        {
+            var studnetEntities = await _dbContext.Students
+                .Where(student => student.GroupId == groupId).ToListAsync();
+
+            if (studnetEntities.Count == 0)
+                throw new ArgumentException($"Students of group with id {groupId} not found");
+
+            return studnetEntities.Select(x => new StudentMessage
+            {
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Age = x.Age,
+                GroupId = x.GroupId
+            });
         }
     }
 }
